@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hand Cricket Tournament 2025 Registration</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Hand Cricket Tournament 2025 Registration Form</h2>
+  <form id="cricketForm" onsubmit="sendToWhatsApp(); return false;">
+    <label aria-label="Full Name">Full Name:
+      <input type="text" id="name" required>
+    </label>
+    <label aria-label="Email Address">Email Address:
+      <input type="email" id="email" required>
+    </label>
+    <label aria-label="Phone Number">Phone Number:
+      <input type="tel" id="phone" required>
+    </label>
+    <label aria-label="Gender">Gender:
+      <select id="gender">
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+    </label>
+    <label aria-label="Age">Age:
+      <input type="number" id="age" required>
+    </label>
+    <label aria-label="Number of 50s">50s:
+      <input type="number" id="fifties">
+    </label>
+    <label aria-label="Number of 100s">100s:
+      <input type="number" id="hundreds">
+    </label>
+    <label aria-label="Number of Wickets">Wickets:
+      <input type="number" id="wickets">
+    </label>
+    <label aria-label="Man of the Match">Man of the Match:
+      <input type="number" id="mom">
+    </label>
+    <label aria-label="Premium Status">Premium Status:
+      <select id="premium">
+        <option>Free User</option>
+        <option>Star Premium</option>
+        <option>Gemstone Premium</option>
+      </select>
+    </label>
+    <button type="submit">Submit & Send to WhatsApp</button>
+  </form>
+
+  <script>
+    function sendToWhatsApp() {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const gender = document.getElementById("gender").value;
+      const age = document.getElementById("age").value;
+      const fifties = document.getElementById("fifties").value;
+      const hundreds = document.getElementById("hundreds").value;
+      const wickets = document.getElementById("wickets").value;
+      const mom = document.getElementById("mom").value;
+      const premium = document.getElementById("premium").value;
+
+      const message = `*Hand Cricket Tournament 2025 Registration*\n\n` +
+        `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nGender: ${gender}\nAge: ${age}\n` +
+        `50s: ${fifties}\n100s: ${hundreds}\nWickets: ${wickets}\nMan of the Match: ${mom}\n` +
+        `Premium Status: ${premium}`;
+
+      const whatsappNumber = "919049431064";
+      const whatsappURL = "https://wa.me/" + whatsappNumber + "?text=" + encodeURIComponent(message);
+      window.open(whatsappURL, '_blank');
+    }
+  </script>
+</body>
+</html>
