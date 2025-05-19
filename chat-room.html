@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Chat Room</title>
+</head>
+<body>
+  <h2>Chat Room</h2>
+
+  <div>
+    <input type="text" id="roomId" placeholder="Room ID">
+    <button onclick="createRoom()">Create Room</button>
+    <button onclick="joinRoom()">Join Room</button>
+  </div>
+
+  <div>
+    <input type="text" id="userName" placeholder="Your Name">
+  </div>
+
+  <div style="margin-top: 10px;">
+    <input type="text" id="messageInput" placeholder="Type a message" style="width: 70%;">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <div id="chat" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll;">
+    <b>Messages:</b><br>
+  </div>
+
+  <script>
+    let socket;
+    let currentRoomId = '';
+
+    function createRoom() {
+      fetch('https://suryasserver.onrender.com/create-room')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('roomId').value = data.roomId;
+          alert('Room created: ' + data.roomId);
+          joinRoom(); // Auto-join
+        });
+    }
+
+    function joinRoom() {
+      const roomId = document.getElementById('roomId').value;
+      fetch(`https://suryasserver.onrender.com/join-room?id=${roomId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            connectWebSocket(roomId);
+          } else {
+            alert('Room not found');
+          }
+        });
+    }
+
+    function connectWebSocket(roomId) {
+      currentRoomId = roomId;
+      socket = new WebSocket(`wss://suryasserver.onrender.com`);
+
+      socket.onopen = () => {
+        socket.send(JSON.stringify({ type: 'join', roomId: currentRoomId }));
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.text && data.from) {
+          const chatBox = document.getElementById('chat');
+          chatBox.innerHTML += `<div><b>${data.from}:</b> ${data.text}</div>`;
+          chatBox.scrollTop = chatBox.scrollHeight;
+        }
+      };
+
+      socket.onclose = () => {
+        alert('Disconnected from room');
+      };
+    }
+
+    function sendMessage() {
+      const text = document.getElementById('messageInput').value;
+      const name = document.getElementById('userName').value || 'Anonymous';
+      if (socket && socket.readyState === WebSocket.OPEN && text) {
+        socket.send(JSON.stringify({ type: 'message', name, text }));
+        document.getElementById('messageInput').value = '';
+      } else {
+        alert('Not connected or message is empty');
+      }
+    }
+  </script>
+</body>
+</html>
