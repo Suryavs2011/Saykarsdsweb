@@ -6,17 +6,17 @@
 <body>
   <h2>Chat Room</h2>
 
-  <div>
+  <div id="roomControls">
     <input type="text" id="roomId" placeholder="Room ID">
     <button onclick="createRoom()">Create Room</button>
     <button onclick="joinRoom()">Join Room</button>
   </div>
 
-  <div>
+  <div id="userInput" style="margin-top: 10px;">
     <input type="text" id="userName" placeholder="Your Name">
   </div>
 
-  <div style="margin-top: 10px;">
+  <div id="messageControls" style="margin-top: 10px; display: none;">
     <input type="text" id="messageInput" placeholder="Type a message" style="width: 70%;">
     <button onclick="sendMessage()">Send</button>
   </div>
@@ -45,6 +45,8 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
+            document.getElementById('roomControls').style.display = 'none';
+            document.getElementById('messageControls').style.display = 'block';
             connectWebSocket(roomId);
           } else {
             alert('Room not found');
@@ -64,7 +66,8 @@
         const data = JSON.parse(event.data);
         if (data.text && data.from) {
           const chatBox = document.getElementById('chat');
-          chatBox.innerHTML += `<div><b>${data.from}:</b> ${data.text}</div>`;
+          const sender = data.from === (document.getElementById('userName').value || 'Anonymous') ? 'You' : data.from;
+          chatBox.innerHTML += `<div><b>${sender}:</b> ${data.text}</div>`;
           chatBox.scrollTop = chatBox.scrollHeight;
         }
       };
