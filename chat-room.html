@@ -8,8 +8,8 @@
 
   <div id="roomControls">
     <input type="text" id="roomId" placeholder="Room ID">
-    <button onclick="createRoom()">Create Room</button>
-    <button onclick="joinRoom()">Join Room</button>
+    <button id="createBtn" onclick="createRoom()">Create Room</button>
+    <button id="joinBtn" onclick="joinRoom()">Join Room</button>
   </div>
 
   <div id="userInput" style="margin-top: 10px;">
@@ -35,7 +35,7 @@
         .then(data => {
           document.getElementById('roomId').value = data.roomId;
           alert('Room created: ' + data.roomId);
-          joinRoom(); // Auto-join the room after creation
+          joinRoom();
         });
     }
 
@@ -45,10 +45,13 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            // Hide room controls and user input, show message controls
+            // Hide all room joining controls
             document.getElementById('roomControls').style.display = 'none';
             document.getElementById('userInput').style.display = 'none';
+
+            // Show messaging area
             document.getElementById('messageControls').style.display = 'block';
+
             connectWebSocket(roomId);
           } else {
             alert('Room not found');
