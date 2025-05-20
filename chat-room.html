@@ -30,6 +30,11 @@
     let currentRoomId = '';
 
     function createRoom() {
+      const userName = document.getElementById('userName').value.trim();
+      if (!userName) {
+        alert('Please enter your name before creating a room.');
+        return;
+      }
       fetch('https://suryasserver.onrender.com/create-room')
         .then(res => res.json())
         .then(data => {
@@ -40,18 +45,25 @@
     }
 
     function joinRoom() {
-      const roomId = document.getElementById('roomId').value;
+      const userName = document.getElementById('userName').value.trim();
+      if (!userName) {
+        alert('Please enter your name before joining a room.');
+        return;
+      }
+
+      const roomId = document.getElementById('roomId').value.trim();
+      if (!roomId) {
+        alert('Enter a valid Room ID');
+        return;
+      }
+
       fetch(`https://suryasserver.onrender.com/join-room?id=${roomId}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            // Hide all room joining controls
             document.getElementById('roomControls').style.display = 'none';
             document.getElementById('userInput').style.display = 'none';
-
-            // Show messaging area
             document.getElementById('messageControls').style.display = 'block';
-
             connectWebSocket(roomId);
           } else {
             alert('Room not found');
@@ -64,15 +76,17 @@
       socket = new WebSocket(`wss://suryasserver.onrender.com`);
 
       socket.onopen = () => {
-        socket.send(JSON.stringify({ type: 'join', roomId: currentRoomId }));
+        socket.send(JSON.stringify({ type: 'join', roomId }));
       };
 
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        const userName = document.getElementById('userName').value.trim() || 'Anonymous';
         if (data.text && data.from) {
           const chatBox = document.getElementById('chat');
-          const sender = data.from === (document.getElementById('userName').value || 'Anonymous') ? 'You' : data.from;
-          chatBox.innerHTML += `<div><b>${sender}:</b> ${data.text}</div>`;
+          const sender = data.from === userName ? 'You' : data.from;
+          const messageDiv = `<div><b>${sender}:</b> ${data.text}</div>`;
+          chatBox.innerHTML += messageDiv;
           chatBox.scrollTop = chatBox.scrollHeight;
         }
       };
@@ -83,8 +97,9 @@
     }
 
     function sendMessage() {
-      const text = document.getElementById('messageInput').value;
-      const name = document.getElementById('userName').value || 'Anonymous';
+      const text = document.getElementById('messageInput').value.trim();
+      const name = document.getElementById('userName').value.trim() || 'Anonymous';
+
       if (socket && socket.readyState === WebSocket.OPEN && text) {
         socket.send(JSON.stringify({ type: 'message', name, text }));
         document.getElementById('messageInput').value = '';
